@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+    <context:annotation-config/>
+    <context:component-scan base-package="org.cassandrademo.example"/>
+
+    <bean id="cassandraHostConfigurator" class="me.prettyprint.cassandra.service.CassandraHostConfigurator">
+        <constructor-arg value="localhost:9160"/>
+    </bean>
+
+    <bean id="cluster" class="me.prettyprint.cassandra.service.ThriftCluster">
+        <constructor-arg value="Test Cluster"/>
+        <constructor-arg ref="cassandraHostConfigurator"/>
+    </bean>
+
+    <bean id="consistencyLevelPolicy" class="me.prettyprint.cassandra.model.ConfigurableConsistencyLevel">
+        <property name="defaultReadConsistencyLevel" value="ALL"/>
+        <property name="defaultWriteConsistencyLevel" value="QUORUM"/>
+    </bean>
+
+    <bean id="failoverPolicy" class="me.prettyprint.cassandra.service.FailoverPolicy">
+        <constructor-arg index="0" value="0"/>
+        <constructor-arg index="1" value="0"/>
+    </bean>
+
+    <bean id="entityManager" class="me.prettyprint.hom.EntityManagerImpl">
+        <constructor-arg index="0" type="me.prettyprint.hector.api.Keyspace" ref="keyspace"/>
+        <constructor-arg index="1" type="java.lang.String" value="org.cassandrademo.example.pojo"/>
+    </bean>
+
+    <util:map id="creds" map-class="java.util.HashMap">
+        <entry key="username" value="legezadm" />
+        <entry key="password" value="Magic8Ball" />
+    </util:map>
+
+    <bean id="keyspace" class="me.prettyprint.hector.api.factory.HFactory" factory-method="createKeyspace">
+        <constructor-arg value="demoCassandra"/>
+        <constructor-arg ref="cluster"/>
+        <constructor-arg ref="consistencyLevelPolicy"/>
+        <constructor-arg ref="failoverPolicy"/>
+        <constructor-arg ref="creds"/>
+    </bean>
+
+</beans>
