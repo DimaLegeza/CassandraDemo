@@ -14,40 +14,44 @@
     <context:component-scan base-package="org.cassandrademo.example"/>
 
     <bean id="cassandraHostConfigurator" class="me.prettyprint.cassandra.service.CassandraHostConfigurator">
-        <constructor-arg value="localhost:9160"/>
+        <constructor-arg value="${host}"/>
     </bean>
 
     <bean id="cluster" class="me.prettyprint.cassandra.service.ThriftCluster">
-        <constructor-arg value="Test Cluster"/>
+        <constructor-arg value="${clusterName}"/>
         <constructor-arg ref="cassandraHostConfigurator"/>
     </bean>
 
     <bean id="consistencyLevelPolicy" class="me.prettyprint.cassandra.model.ConfigurableConsistencyLevel">
-        <property name="defaultReadConsistencyLevel" value="ALL"/>
-        <property name="defaultWriteConsistencyLevel" value="QUORUM"/>
+        <property name="defaultReadConsistencyLevel" value="${readConsistencyLevel}"/>
+        <property name="defaultWriteConsistencyLevel" value="${writeConsistencyLevel}"/>
     </bean>
 
     <bean id="failoverPolicy" class="me.prettyprint.cassandra.service.FailoverPolicy">
-        <constructor-arg index="0" value="0"/>
-        <constructor-arg index="1" value="0"/>
+        <constructor-arg name="numRetries" value="${failoverPolicyRetries}"/>
+        <constructor-arg name="sleepBwHostsMilli" value="${failoverPolicyRetries}"/>
     </bean>
 
     <bean id="entityManager" class="me.prettyprint.hom.EntityManagerImpl">
-        <constructor-arg index="0" type="me.prettyprint.hector.api.Keyspace" ref="keyspace"/>
-        <constructor-arg index="1" type="java.lang.String" value="org.cassandrademo.example.pojo"/>
+        <constructor-arg name="keyspace" ref="keyspace"/>
+        <constructor-arg name="classpathPrefix" value="${entityManagerPackage}"/>
     </bean>
 
     <util:map id="creds" map-class="java.util.HashMap">
-        <entry key="username" value="legezadm" />
-        <entry key="password" value="Magic8Ball" />
+        <entry key="username" value="${credentialsUsername}" />
+        <entry key="password" value="${credentialsPassword}" />
     </util:map>
 
     <bean id="keyspace" class="me.prettyprint.hector.api.factory.HFactory" factory-method="createKeyspace">
-        <constructor-arg value="demoCassandra"/>
+        <constructor-arg value="${keyspace}"/>
         <constructor-arg ref="cluster"/>
         <constructor-arg ref="consistencyLevelPolicy"/>
         <constructor-arg ref="failoverPolicy"/>
         <constructor-arg ref="creds"/>
+    </bean>
+
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="cassandra.properties"/>
     </bean>
 
 </beans>
