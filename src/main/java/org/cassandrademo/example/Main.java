@@ -20,14 +20,14 @@ public class Main {
         EntityManagerImpl entityManager = (EntityManagerImpl) applicationContext.getBean("entityManager");
         System.out.println("established connection");
 //        cassandraHelper.clusterPrepare(KEYSPACE, cluster);
-//        cassandraHelper.persistUser(keyspace);
-//        cassandraHelper.persistState(entityManager);
+        cassandraHelper.persistUser(entityManager);
+        cassandraHelper.persistState(entityManager);
         cassandraHelper.retrieveState(entityManager);
-//        cassandraHelper.retrieveState(entityManager);
-//        cassandraHelper.retrieveUser(entityManager);
-//        cassandraHelper.getUserById(keyspace);
-//        cassandraHelper.mutateState(keyspace);
-//        cassandraHelper.sliceQuery(keyspace);
+        cassandraHelper.retrieveState(entityManager);
+        cassandraHelper.retrieveUser(entityManager);
+        cassandraHelper.getUserById(keyspace);
+        cassandraHelper.mutateState(keyspace);
+        cassandraHelper.sliceQuery(keyspace);
 
     }
 }
